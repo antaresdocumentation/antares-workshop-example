@@ -11,11 +11,11 @@
 
 DHT dht(DHTPIN, DHTTYPE);
 
-#define ACCESSKEY "your-access-key"
-#define WIFISSID "your-wifi-ssid"
-#define PASSWORD "your-wifi-password"
+#define ACCESSKEY "e7e349fc2216941a:9d0cf82c25277bdd"
+#define WIFISSID "antares"
+#define PASSWORD "workshop"
 
-#define URI_PROJECT_CONTROL "your-Non-hierarchical URI"
+#define URI_PROJECT_CONTROL "/antares-cse/cnt-218353752"
 
 StaticJsonBuffer<10000> jsonBuffer;
 
@@ -29,7 +29,6 @@ unsigned long previousMillis=0;
 int statusSwitch=0;
 
 Antares antares(ACCESSKEY);
-
 
 void ledBlueOn()
 {
@@ -144,12 +143,12 @@ void loop() {
       {
         if (statusSwitchs == "1") 
         {
-          digitalWrite(RELAY,LOW);
+          digitalWrite(RELAY,HIGH);
           statusSwitch=0;
         }
         else 
         {
-          digitalWrite(RELAY,HIGH);
+          digitalWrite(RELAY,LOW);
           statusSwitch=1;
         }  
       }

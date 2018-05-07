@@ -1,8 +1,8 @@
 #include "AntaresESPHTTP.h"
 
-#define ACCESSKEY "your-accesskey" //sesuai account
-#define WIFISSID "your-wifi-ssid"
-#define PASSWORD "your-wifi-pass"
+#define ACCESSKEY "e7e349fc2216941a:9d0cf82c25277bdd" //sesuai account
+#define WIFISSID "antares"
+#define PASSWORD "workshop"
 
 String projectName = "WorkshopAntares";
 String deviceName = "SmartSwitch_1_Status";

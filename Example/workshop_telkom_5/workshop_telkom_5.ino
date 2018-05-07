@@ -1,11 +1,11 @@
 #include "AntaresESPHTTP.h"
 #include <PubSubClient.h>
 
-#define ACCESSKEY "your-access-key"
-#define WIFISSID "your-wifi-ssid"
-#define PASSWORD "your-wifi-password"
+#define ACCESSKEY "e7e349fc2216941a:9d0cf82c25277bdd"
+#define WIFISSID "antares"
+#define PASSWORD "workshop"
 
-#define URI_PROJECT_CONTROL "your-Non-hierarchical URI"
+#define URI_PROJECT_CONTROL "/antares-cse/cnt-218353752"
 #define RELAY D7
 #define LED_RED     D6
 #define LED_BLUE    D0
@@ -88,9 +88,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
 String getPayload(String Token, String Project, String Device)
 {
   String result = "{\"m2m:rqp\": {\"fr\": \""+Token+"\",\"to\": \"/antares-cse/antares-id/"+Project+"/"+Device+"_Status\",\"op\": 1,\"rqi\": 123456,\"pc\": {\"m2m:cin\": {\"cnf\": \"message\",\"con\": \"{"; 
-  result +="\"temperature\" : \""+(String)random(0,10)+"\"/>";
-  result +="\"humidity\" : \""+(String)random(0,10)+"\"/>";
+  result +="\"temperature\" : \""+(String)random(0,10)+"\",";
+  result +="\"humidity\" : \""+(String)random(0,10)+"\"";
   result +="}\" }},\"ty\": 4 }}"; 
+
+  //result = "{\"m2m:cin\": {\"xmlns:m2m\": \"http://www.onem2m.org/xml/protocols\",\"cnf\": \"application/json\",\"con\": \"{\"temperature\":\"10\",\"humidity\":\"20\",\"status\":\"1\"}\"}}";
   return result;
 }
 
@@ -114,6 +116,7 @@ void loop() {
         dataFromAntares.replace("\\\""," ");
         dataFromAntares.replace("[","");
         dataFromAntares.replace("]","");
+        Serial.println(dataFromAntares);
         JsonObject& root = jsonBuffer.parseObject(dataFromAntares);
         JsonObject& root4 = jsonBuffer.parseObject(root["m2m:cin"].as<String>());
         Label = root4["pi"].as<String>();
@@ -144,5 +147,8 @@ void loop() {
       if (!client.connected())reconnect();
      
       client.loop();
+
+      sendDataToAntares();
+      delay(1000);
    }
 }
