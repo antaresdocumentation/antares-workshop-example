@@ -12,19 +12,19 @@
 DHT dht(DHTPIN, DHTTYPE);
 
 #define ACCESSKEY "e7e349fc2216941a:9d0cf82c25277bdd"
-#define WIFISSID "antares"
-#define PASSWORD "workshop"
+#define WIFISSID "workshopantares2"
+#define PASSWORD "123456789"
 
 #define URI_PROJECT_CONTROL "/antares-cse/cnt-218353752"
 
 StaticJsonBuffer<10000> jsonBuffer;
 
-String projectName = "WorkshopAntares";
-String deviceNameStatus = "SmartSwitch_1_Status";
-String deviceNameControl = "SmartSwitch_1_Control";
+String projectName = "WorkshopAntares"; //Application Name Antares
+String deviceNameStatus = "SmartSwitch_1_Status"; //Untuk Hardware Update Status
+String deviceNameControl = "SmartSwitch_1_Control"; //Untuk Apps/Web/Postman Kirim Data
 String Value,Unit,Label;
 
-unsigned long intervalSend=10000; // the time we need to wait
+unsigned long intervalSend=10000; // 10 detik update status ke antares
 unsigned long previousMillis=0; 
 int statusSwitch=0;
 
@@ -32,11 +32,13 @@ Antares antares(ACCESSKEY);
 
 void ledBlueOn()
 {
-  digitalWrite(LED_GREEN,HIGH);
-  digitalWrite(LED_BLUE,LOW);
-  digitalWrite(LED_RED,HIGH);
+  digitalWrite(LED_GREEN,HIGH); //OFF
+  digitalWrite(LED_BLUE,LOW); //ON
+  digitalWrite(LED_RED,HIGH); //OFF
 } 
 
+//LED RGB COMMON ANODA (+) - = 0
+//KATODA (-) =1
 void ledBlueOff()
 {
   digitalWrite(LED_BLUE,HIGH);
@@ -67,14 +69,14 @@ void ledGreenOff()
 } 
 
 void setup() {
-    Serial.begin(115200);
+    Serial.begin(115200);//default 9600bps -> 115200 byte per second
     antares.setDebug(true);
     antares.wifiConnection(WIFISSID,PASSWORD);
-    pinMode(RELAY,OUTPUT);
+    pinMode(RELAY,OUTPUT); // D7 => OUTPUT
     pinMode(LED_BLUE,OUTPUT);
     pinMode(LED_RED,OUTPUT);
-    pinMode(LED_GREEN,OUTPUT);
-    dht.begin();
+    pinMode(LED_GREEN,OUTPUT); //pinMode (BUTTON,INPUT)
+    dht.begin(); //Deklarasi sensor temperature,humidity
 }
 
 
@@ -83,6 +85,8 @@ void loop() {
    unsigned long currentMillis = millis(); 
    if (antares.checkWifiConnection())
    {
+
+    //UPDATE STATUS
      if ((unsigned long)(currentMillis - previousMillis) >= intervalSend) {
          float humidity = dht.readHumidity();
          float temperature = dht.readTemperature();
@@ -91,10 +95,10 @@ void loop() {
          String dataName[sizeData],dataValue[sizeData];
          dataName[0]= "temperature";
          dataName[1]= "humidity";
-         dataName[2]= "status";
+         dataName[2]= "status"; //Keadaan RELAY ON/OFF
     
-         dataValue[0]= (String)humidity;
-         dataValue[1]= (String)temperature;
+         dataValue[0]= (String)temperature;
+         dataValue[1]= (String)humidity;
          dataValue[2]= (String)statusSwitch;
         
         
@@ -117,7 +121,7 @@ void loop() {
          previousMillis = millis();
     }
   
-    
+    //Data Terakhir yang ada di 
     String dataFromAntares = antares.retrieveLatestData(projectName,deviceNameControl);
   
     if (dataFromAntares != "")
@@ -137,19 +141,20 @@ void loop() {
       con.replace(" ","\"");
   
       JsonObject& contentAntares = jsonBuffer.parseObject(con);
-      String statusSwitchs = contentAntares["status"].as<String>();
+      String statusSwitchs = contentAntares["status"].as<String>(); //1 Atau 0
+
       
       if (Label == URI_PROJECT_CONTROL)
       {
         if (statusSwitchs == "1") 
         {
           digitalWrite(RELAY,HIGH);
-          statusSwitch=0;
+          statusSwitch=1;
         }
         else 
         {
           digitalWrite(RELAY,LOW);
-          statusSwitch=1;
+          statusSwitch=0;
         }  
       }
       jsonBuffer.clear();
